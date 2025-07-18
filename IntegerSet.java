@@ -44,12 +44,10 @@ public class IntegerSet {
              throw new RuntimeException("Cannot add null to the set.");
         }
         if (numbers.size()>1) {
-            int i = 0;
             // วนลูปหาตำแหน่งที่จะแทรก เพื่อให้ข้อมูลยังคงเรียงลำดับ
-            while (i < numbers.size() && numbers.get(i) < x) {
-                i++;
+            for(int i = 0; i < numbers.size() - 1;) {
+                //if(...)
             }
-            numbers.add(i, x);
         }
         checkRep();
     }
