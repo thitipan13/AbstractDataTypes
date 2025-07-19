@@ -4,16 +4,15 @@ import java.util.ArrayList;
  * ADT ที่เก็บ integer แบบไม่ซ้ำกันและเรียงลำดับ
  */
 public class IntegerSet {
-    ArrayList<Integer> numbers;
+    private ArrayList<Integer> numbers;
 
     // Rep Invariant (RI):
-    //  - 'numbers' must not contain duplicate integers. (ห้ามมีเลขซ้ำ)
-    //  - The integers in 'numbers' must be sorted in ascending order. (เลขต้องเรียงจากน้อยไปมาก)
-    //  - 'numbers' must not contain any null elements. (ห้ามมีค่า null)
+    //  - numbers must not contain duplicate integers. (ห้ามมีเลขซ้ำ)
+    //  - integers in numbers must be sorted in ascending order. (เลขต้องเรียงจากน้อยไปมาก)
+    //  - numbers must not contain any null elements. (ห้ามมีค่า null)
     //
     // Abstraction Function (AF):
     //  AF(numbers) = เซตของจำนวนเต็มที่อยู่ใน ArrayList 'numbers'
-    //  เช่น ถ้า numbers คือ [10, 20, 50] จะแทนเซต {10, 20, 50}
 
     /**
      * Constructor เริ่มต้น สร้างเซตว่าง
@@ -29,7 +28,7 @@ public class IntegerSet {
     private void checkRep() {
         for (int i = 0; i < numbers.size() - 1; i++) {
             if (numbers.get(i) == null || numbers.get(i+1) == null ||
-                numbers.get(i).compareTo(numbers.get(i+1)) >= 0) {
+                numbers.get(i) >= numbers.get(i+1)) {
                 throw new RuntimeException("Rep invariant violated!");
             }
         }
@@ -43,11 +42,22 @@ public class IntegerSet {
         if (numbers == null) {
              throw new RuntimeException("Cannot add null to the set.");
         }
-        if (numbers.size()>1) {
-            // วนลูปหาตำแหน่งที่จะแทรก เพื่อให้ข้อมูลยังคงเรียงลำดับ
-            for(int i = 0; i < numbers.size() - 1;) {
-                //if(...)
+        if (numbers.size() == 0) {
+            numbers.add(x);
+        } else {
+            for (int i = 0; i < numbers.size(); i++) {
+                if (numbers.get(i).equals(x)) {
+                    // ถ้ามีเลขซ้ำอยู่แล้ว ไม่ต้องเพิ่ม
+                    return;
+                }
+                if (numbers.get(i) > x) {
+                    numbers.add(i, x); // แทรก x ก่อนตัวที่มากกว่า
+                    checkRep();
+                    return;
+                }
             }
+            // ถ้า x มากกว่าทุกตัวในเซต ให้เพิ่มต่อท้าย
+            numbers.add(x);
         }
         checkRep();
     }
@@ -57,10 +67,7 @@ public class IntegerSet {
      * @param x ตัวเลขที่ต้องการลบ
      */
     public void remove(Integer x) {
-        if (x == null) {
-            return;
-        }
-        // ArrayList.indexOf() ทำการค้นหาแบบ linear search เพื่อหาดัชนีของ x
+        if (x == null) return;
         int index = numbers.indexOf(x);
         if (index != -1) { // ถ้าเจอ (index ไม่ใช่ -1)
             numbers.remove(index);
@@ -74,11 +81,8 @@ public class IntegerSet {
      * @return true หากมี x อยู่ในเซต, false หากไม่มี
      */
     public boolean contains(Integer x) {
-        if (x == null) {
-            return false;
-        }
-        // ArrayList.contains() ใช้การวนลูปหาข้อมูลแบบ linear search
-        return numbers.contains(x);
+        if (x == null) return false;
+        return numbers.indexOf(x) != -1;
     }
 
     /**
